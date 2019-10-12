@@ -48,6 +48,7 @@ using DataFrames
     result=univariate(INPUT)
     show(result)
     result["SummaryNum"]
-    @test map(x->round(x,digits=4),convert(Matrix,result["SummaryNum"][:,2:end])) == map(x->round(x,digits=4),convert(Matrix,testnum[:,2:end])) 
+    @test map(x->floor(x,digits=7),convert(Matrix,result["SummaryNum"][:,2:end])) == map(x->floor(x,digits=7),convert(Matrix,testnum[:,2:end])) 
+    @test map(x->round(x,digits=8),convert(Matrix,result["SummaryNum"][:,2:end])) == map(x->round(x,digits=8),convert(Matrix,testnum[:,2:end])) 
     @test result["SummaryNonNum"]==testnonnum
 end
