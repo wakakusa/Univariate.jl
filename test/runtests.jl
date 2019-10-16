@@ -45,7 +45,7 @@ using DataFrames
     testnonnum=DataFrame(Species=colname2,count=count)
 
     ##test
-    result=univariate(INPUT)
+    result=univariate(INPUT,graphplot=true)
     show(result)
     result["SummaryNum"]
     @test map(x->floor(x,digits=7),convert(Matrix,result["SummaryNum"][:,2:end])) == map(x->floor(x,digits=7),convert(Matrix,testnum[:,2:end])) 

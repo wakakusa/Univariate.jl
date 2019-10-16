@@ -1,7 +1,7 @@
 module Univariate
 
 #パッケージの読み込み
-using  DataFrames , StatsBase #, Gadfly
+using  DataFrames,StatsBase,Plots,PlotlyJS,LinearAlgebra,StatsPlots
 
 function numericsummary(INPUT::Array,VarNames::Symbol)  #数値型の基本統計量の算出
   SummaryVar=StatsBase.var(INPUT)
@@ -33,22 +33,30 @@ function summarymerge(INPUT::DataFrame, Summary::DataFrame ,FirstMergeFlag::Bool
   return Dict( [("Summary",Summary),("FirstMergeFlag",FirstMergeFlag)])
 end
 
-function univariate(INPUT)
+function univariate(INPUT;graphplot::Bool=false)
   VarNames=names(INPUT)
   Vartype=eltypes(INPUT)
   SummaryNonNum=DataFrame(colname="",hist=0)
   SummaryNum=DataFrame(colname="",Var=0.0,Std=0.0,Mean=0.0, Min=0.0 ,Quartile1st=0.0 ,Median=0.0,Quartile3rd=0.0,Max=0.0)
   FirstMergeFlagNum=true
   FirstMergeFlagNonNum=true
+  typearray=0
+  typearrayflag=true
  
   for  i = 1 : size(INPUT,2)
-    if (( Vartype[i]==(Int) || Vartype[i]==(Float32)  || Vartype[i]== (Float64) ) == true )
+    if ( Vartype[i] <: Real)
       #数値型の基本統計量の算出
       work=numericsummary(INPUT[:,i],VarNames[i])
 
       #基本統計量の集約
       SummaryNum=summarymerge(work,SummaryNum,FirstMergeFlagNum)["Summary"]
       FirstMergeFlagNum=summarymerge(work,SummaryNum,FirstMergeFlagNum)["FirstMergeFlag"]
+      #列がReal型かどうか判定
+      if(typearrayflag)
+        typearray=i
+      else
+        typearray=hcat(typearray,i)
+      end
     else
       #非数値型の基本統計量の算出
       work=nonnumericsummary(INPUT,VarNames[i])
@@ -57,6 +65,11 @@ function univariate(INPUT)
       SummaryNonNum=summarymerge(work,SummaryNonNum,FirstMergeFlagNonNum)["Summary"]
       FirstMergeFlagNonNum=summarymerge(work,SummaryNonNum,FirstMergeFlagNonNum)["FirstMergeFlag"]
     end   
+  end
+
+  if(graphplot)
+    plotlyjs()
+    @df INPUT corrplot(cols(typearray),grid=true)
   end
 
   return Dict([("SummaryNum",SummaryNum),("SummaryNonNum",SummaryNonNum)])
