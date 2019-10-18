@@ -30,7 +30,7 @@ function summarymerge(INPUT::DataFrame, Summary::DataFrame ,FirstMergeFlag::Bool
     Summary=vcat(Summary,INPUT)
   end
 
-  return Dict( [("Summary",Summary),("FirstMergeFlag",FirstMergeFlag)])
+  return Summary,FirstMergeFlag
 end
 
 function univariate(INPUT;graphplot::Bool=false)
@@ -49,8 +49,7 @@ function univariate(INPUT;graphplot::Bool=false)
       work=numericsummary(INPUT[:,i],VarNames[i])
 
       #基本統計量の集約
-      SummaryNum=summarymerge(work,SummaryNum,FirstMergeFlagNum)["Summary"]
-      FirstMergeFlagNum=summarymerge(work,SummaryNum,FirstMergeFlagNum)["FirstMergeFlag"]
+      SummaryNum,FirstMergeFlagNum=summarymerge(work,SummaryNum,FirstMergeFlagNum)
       #列がReal型かどうか判定
       if(typearrayflag)
         typearray=i
@@ -63,8 +62,7 @@ function univariate(INPUT;graphplot::Bool=false)
       work=nonnumericsummary(INPUT,VarNames[i])
       
       #基本統計量の集約
-      SummaryNonNum=summarymerge(work,SummaryNonNum,FirstMergeFlagNonNum)["Summary"]
-      FirstMergeFlagNonNum=summarymerge(work,SummaryNonNum,FirstMergeFlagNonNum)["FirstMergeFlag"]
+      SummaryNonNum,FirstMergeFlagNonNum=summarymerge(work,SummaryNonNum,FirstMergeFlagNonNum)
     end   
   end
 
@@ -72,7 +70,7 @@ function univariate(INPUT;graphplot::Bool=false)
     @df INPUT corrplot(cols(typearray),grid=true)
   end
 
-  return Dict([("SummaryNum",SummaryNum),("SummaryNonNum",SummaryNonNum)])
+  return SummaryNum,SummaryNonNum
 end
 
 export numericsummary,summarymerge,univariate
