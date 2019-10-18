@@ -1,7 +1,7 @@
 module Univariate
 
 #パッケージの読み込み
-using  DataFrames,StatsBase,Plots,PlotlyJS,LinearAlgebra,StatsPlots
+using DataFrames,StatsBase,Plots,StatsPlots
 
 function numericsummary(INPUT::Array,VarNames::Symbol)  #数値型の基本統計量の算出
   SummaryVar=StatsBase.var(INPUT)
@@ -54,6 +54,7 @@ function univariate(INPUT;graphplot::Bool=false)
       #列がReal型かどうか判定
       if(typearrayflag)
         typearray=i
+        typearrayflag=false
       else
         typearray=hcat(typearray,i)
       end
@@ -68,7 +69,6 @@ function univariate(INPUT;graphplot::Bool=false)
   end
 
   if(graphplot)
-    plotlyjs()
     @df INPUT corrplot(cols(typearray),grid=true)
   end
 
