@@ -5,7 +5,12 @@ using DataFrames
 @testset "univariate.jl" begin
     # Write your own tests here.
     ## テスト用データセット
-    include("../src/makeirisdataset.jl")
+    packagemasterpath=DEPOT_PATH[1]
+    try
+        include(joinpath(packagemasterpath,"packages/Univariate/src/makeirisdataset.jl"))
+    catch
+        include(joinpath(packagemasterpath,"dev/Univariate/src/makeirisdataset.jl"))
+    end
 
     INPUT=makeirisdataset()
 
@@ -35,10 +40,15 @@ using DataFrames
     count=[50,50,50]
     testnonnum=DataFrame(Species=colname2,count=count)
 
-    ##test
+    ##test1 univariate
     SummaryNum,SummaryNonNum=univariate(INPUT,graphplot=true)
-    SummaryNum
     @test map(x->floor(x,digits=7),convert(Matrix,SummaryNum[:,2:end])) == map(x->floor(x,digits=7),convert(Matrix,testnum[:,2:end])) 
     @test map(x->round(x,digits=8),convert(Matrix,SummaryNum[:,2:end])) == map(x->round(x,digits=8),convert(Matrix,testnum[:,2:end])) 
     @test SummaryNonNum==testnonnum
+
+    ##test2 tableunivariate
+    #INPUT=makeirisdataset()
+    #groupbycol=:SepalLength
+    #staticstargetcol=:Species
+    #tableunivariate(INPUT,groupbycol,staticstargetcol)
 end

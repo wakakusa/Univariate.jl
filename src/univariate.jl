@@ -1,5 +1,4 @@
-
-function numericsummary(INPUT::Array,VarNames::Symbol)  #数値型の基本統計量の算出
+function numericsummary(INPUT::Union{Array,DataFrame},VarNames::Symbol)  #数値型の基本統計量の算出
   SummaryVar=StatsBase.var(INPUT)
   SummaryStd=StatsBase.std(INPUT)
   SummaryQuartile=StatsBase.quantile( INPUT , [0.00, 0.25, 0.50, 0.75, 1.00])
@@ -11,7 +10,7 @@ function numericsummary(INPUT::Array,VarNames::Symbol)  #数値型の基本統�
   return Output
 end
 
-function nonnumericsummary(INPUT::DataFrame,VarNames::Symbol)  #非数値型の基本統計量の算出
+function nonnumericsummary(INPUT::Union{Array,DataFrame},VarNames::Symbol)  #非数値型の基本統計量の算出
   Output=by(INPUT, VarNames, df -> size(df, 1))
   names!(Output,[VarNames,:count])
 
@@ -63,6 +62,7 @@ function univariate(INPUT;graphplot::Bool=false)
   end
 
   if(graphplot)
+    gr()
     @df INPUT corrplot(cols(typearray),grid=true)
   end
 
