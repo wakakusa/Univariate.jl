@@ -5,13 +5,17 @@ using DataFrames
 @testset "univariate.jl" begin
     # Write your own tests here.
     ## テスト用データセット
-    packagemasterpath=DEPOT_PATH[1]
     try
-        include(joinpath(packagemasterpath,"packages/Univariate/src/makeirisdataset.jl"))
+        include("../src/makeirisdataset.jl")
     catch
-        include(joinpath(packagemasterpath,"dev/Univariate/src/makeirisdataset.jl"))
+        packagemasterpath=DEPOT_PATH[1]
+        try
+            include(joinpath(packagemasterpath,"packages/Univariate/src/makeirisdataset.jl"))
+        catch
+            include(joinpath(packagemasterpath,"dev/Univariate/src/makeirisdataset.jl"))
+        end
     end
-
+    
     INPUT=makeirisdataset()
 
     ## 検証用データセット sasで作成
@@ -46,9 +50,21 @@ using DataFrames
     @test map(x->round(x,digits=8),convert(Matrix,SummaryNum[:,2:end])) == map(x->round(x,digits=8),convert(Matrix,testnum[:,2:end])) 
     @test SummaryNonNum==testnonnum
 
-    ##test2 tableunivariate
-    #INPUT=makeirisdataset()
-    #groupbycol=:SepalLength
-    #staticstargetcol=:Species
-    #tableunivariate(INPUT,groupbycol,staticstargetcol)
+    ##test2 groupbycolunivariate
+    INPUT=makeirisdataset()
+    groupbycol=:SepalLength
+    staticstargetcol=:Species
+    groupbycolSummary=groupbycolunivariate(INPUT,groupbycol,staticstargetcol)
+    @test permutedims(Vector(groupbycolSummary[10,[:setosa,:versicolor,:virginica]]))==[3 1 0]
+    @test permutedims(Vector(groupbycolSummary[15,[:setosa,:versicolor,:virginica]]))==[2 5 1]  
+    @test permutedims(Vector(groupbycolSummary[25,[:setosa,:versicolor,:virginica]]))==[0 3 5]
+
+    groupbycol=:Species
+    staticstargetcol=:SepalLength
+    groupbycolSummary=groupbycolunivariate(INPUT,groupbycol,staticstargetcol)
+    #sasでの算出結果
+    sasans=[12.424897959 3.5248968721 50.06 43 48 50 52 58]
+    result=convert(Matrix,groupbycolSummary[groupbycolSummary[:,:colname] .=="setosa",[:Var,:Std,:Mean,:Min,:Quartile1st,:Median,:Quartile3rd,:Max]])
+    @test map(x->floor(x,digits=7),result)==map(x->floor(x,digits=7),sasans)
+    @test map(x->round(x,digits=8),result)==map(x->round(x,digits=8),sasans)
 end

@@ -28,7 +28,7 @@ function summarymerge(INPUT::DataFrame, Summary::DataFrame ,FirstMergeFlag::Bool
   return Summary,FirstMergeFlag
 end
 
-function univariate(INPUT;graphplot::Bool=false)
+function univariate(INPUT::DataFrame;graphplot::Bool=false)
   VarNames=names(INPUT)
   Vartype=eltypes(INPUT)
   SummaryNonNum=DataFrame(colname="",hist=0)

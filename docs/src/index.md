@@ -16,10 +16,12 @@ julia> ]
 ```
 
 ## funciton 
-univariate(input)
-### InputData
-+ input::DataFrames
-### OutputData
+### univariate(INPUT::DataFrames;graphplot::Bool=false)
+#### InputData
++ input:入力対象データフレームを指定
++ graphplot:グラフを出力するかどうか
+#### OutputData
+##### 数値データ
 + colname:
 + Var:
 + Std:
@@ -30,6 +32,13 @@ univariate(input)
 + Quartile3rd:
 + Max:
 
+### groupbycolunivariate(INPUT::DataFrame,groupbycol::Symbol,staticstargetcol::Symbol)
+#### InputData
+INPUT:入力対象データフレームを指定
+groupbycol:グルーピング化対象の列を指定
+staticstargetcol:統計量算出対象の列を指定
+#### OutputData
+##### 数値データ
 
 ## usage
 ```

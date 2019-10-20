@@ -1,4 +1,4 @@
-function tablenumericsummary(INPUT::Union{Array,DataFrame},groupbycol::String)  #数値型の基本統計量の算出
+function groupbycolnumericsummary(INPUT::Union{Array,DataFrame},groupbycol::String)  #数値型の基本統計量の算出
     SummaryVar=StatsBase.var(INPUT)
     SummaryStd=StatsBase.std(INPUT)
     SummaryQuartile=StatsBase.quantile( INPUT , [0.00, 0.25, 0.50, 0.75, 1.00])
@@ -10,7 +10,7 @@ function tablenumericsummary(INPUT::Union{Array,DataFrame},groupbycol::String)  
     return Output
 end
 
-function tablenonnumericsummary(INPUT::Union{Array,DataFrame},groupbycol::Symbol,staticstargetcol::Symbol,setcolnames::Array)  #非数値型の基本統計量の算出
+function groupbycolnonnumericsummary(INPUT::Union{Array,DataFrame},groupbycol::Symbol,staticstargetcol::Symbol,setcolnames::Array)  #非数値型の基本統計量の算出
     result=zeros(Int,1,size(setcolnames,1)-1)
     result=DataFrame(result,Vector(setcolnames[2:end]))
 
@@ -27,8 +27,8 @@ function tablenonnumericsummary(INPUT::Union{Array,DataFrame},groupbycol::Symbol
     return result
 end
 
-function tableunivariate(INPUT::DataFrame,groupbycol::Symbol,staticstargetcol::Symbol)
-    colname=unique(INPUT[:,groupbycol])
+function groupbycolunivariate(INPUT::DataFrame,groupbycol::Symbol,staticstargetcol::Symbol)
+    colname=sort(unique(INPUT[:,groupbycol]))
     SummaryNum=DataFrame(colname="",Var=0.0,Std=0.0,Mean=0.0, Min=0.0 ,Quartile1st=0.0 ,Median=0.0,Quartile3rd=0.0,Max=0.0)
     SummaryNonNum=DataFrame(colname="",hist=0)
     firstresultflag=true
@@ -37,22 +37,22 @@ function tableunivariate(INPUT::DataFrame,groupbycol::Symbol,staticstargetcol::S
         for i in colname
             work=INPUT[INPUT[:,groupbycol] .== i,:]
             if (firstresultflag)
-                SummaryNum=tablenumericsummary(work[:,staticstargetcol],i) 
+                SummaryNum=groupbycolnumericsummary(work[:,staticstargetcol],i) 
                 firstresultflag=false
             else
-                SummaryNum=vcat(SummaryNum,tablenumericsummary(work[:,staticstargetcol],i) )
+                SummaryNum=vcat(SummaryNum,groupbycolnumericsummary(work[:,staticstargetcol],i) )
             end
         end
     else #非数値
-        setcolnames=vcat(groupbycol,union(INPUT[:,staticstargetcol]))
+        setcolnames=vcat(groupbycol,sort(union(INPUT[:,staticstargetcol])))
         setcolnames=map(Symbol,setcolnames)
         for i in colname
             work=INPUT[INPUT[:,groupbycol] .== i,:]
             if (firstresultflag)
-                SummaryNonNum=tablenonnumericsummary(work,groupbycol,staticstargetcol,setcolnames)
+                SummaryNonNum=groupbycolnonnumericsummary(work,groupbycol,staticstargetcol,setcolnames)
                 firstresultflag=false
             else
-                SummaryNonNum=vcat(SummaryNonNum,tablenonnumericsummary(work,groupbycol,staticstargetcol,setcolnames) )
+                SummaryNonNum=vcat(SummaryNonNum,groupbycolnonnumericsummary(work,groupbycol,staticstargetcol,setcolnames) )
             end
         end
     end
