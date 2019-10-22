@@ -62,8 +62,8 @@ function univariate(INPUT::DataFrame;graphplot::Bool=false)
   end
 
   if(graphplot)
-    gr()
-    @df INPUT corrplot(cols(typearray),grid=true)
+   # gr()
+   # @df INPUT corrplot(cols(typearray),grid=true)
   end
 
   return SummaryNum,SummaryNonNum

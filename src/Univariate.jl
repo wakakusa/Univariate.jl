@@ -1,7 +1,7 @@
 module Univariate
 
 #パッケージの読み込み
-using DataFrames,StatsBase,Plots,StatsPlots,GR
+using DataFrames,StatsBase#,Plots,StatsPlots,GR
 include("univariate.jl")
 include("groupbycolunivariate.jl")
 
