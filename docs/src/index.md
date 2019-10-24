@@ -1,11 +1,4 @@
 # Univariate.jl
-
-```@index
-```
-
-```@autodocs
-Modules = [Univariate]
-```
 ## What is this?
 Can calculate summary statistics
 
