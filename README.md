@@ -1,5 +1,6 @@
 # Univariates
 
+[![Build Status](https://github.com/wakakusa/Univariates.jl/workflows/CI/badge.svg)](https://github.com/wakakusa/Univariates.jl/actions)
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://wakakusa.github.io/Univariate.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://wakakusa.github.io/Univariate.jl/dev)
 [![Coverage Status](https://coveralls.io/repos/github/wakakusa/Univariate.jl/badge.svg?branch=origin)](https://coveralls.io/github/wakakusa/Univariate.jl?branch=origin)
