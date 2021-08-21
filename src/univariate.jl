@@ -11,8 +11,8 @@ function numericsummary(INPUT::Union{Array,DataFrame},VarNames::Symbol)  #数値
 end
 
 function nonnumericsummary(INPUT::Union{Array,DataFrame},VarNames::Symbol)  #非数値型の基本統計量の算出
-  Output=by(INPUT, VarNames, df -> size(df, 1))
-  names!(Output,[VarNames,:count])
+  Output=combine(groupby(INPUT, VarNames, sort=false, skipmissing=false), VarNames=>df -> size(df, 1))
+  rename!(Output,[VarNames,:count])
 
   return Output
 end
@@ -29,8 +29,8 @@ function summarymerge(INPUT::DataFrame, Summary::DataFrame ,FirstMergeFlag::Bool
 end
 
 function univariate(INPUT::DataFrame;graphplot::Bool=false)
-  VarNames=names(INPUT)
-  Vartype=eltypes(INPUT)
+  VarNames=propertynames(INPUT)
+  Vartype=eltype.(eachcol(INPUT))
   SummaryNonNum=DataFrame(colname="",hist=0)
   SummaryNum=DataFrame(colname="",Var=0.0,Std=0.0,Mean=0.0, Min=0.0 ,Quartile1st=0.0 ,Median=0.0,Quartile3rd=0.0,Max=0.0)
   FirstMergeFlagNum=true
@@ -39,14 +39,14 @@ function univariate(INPUT::DataFrame;graphplot::Bool=false)
   typearrayflag=true
  
   for  i = 1 : size(INPUT,2)
-    if ( Vartype[i] <: Real)
+    if Vartype[i] <: Real
       #数値型の基本統計量の算出
       work=numericsummary(INPUT[:,i],VarNames[i])
 
       #基本統計量の集約
       SummaryNum,FirstMergeFlagNum=summarymerge(work,SummaryNum,FirstMergeFlagNum)
       #列がReal型かどうか判定
-      if(typearrayflag)
+      if typearrayflag
         typearray=i
         typearrayflag=false
       else

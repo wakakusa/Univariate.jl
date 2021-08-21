@@ -14,10 +14,10 @@ function groupbycolnonnumericsummary(INPUT::Union{Array,DataFrame},groupbycol::S
     result=zeros(Int,1,size(setcolnames,1)-1)
     result=DataFrame(result,Vector(setcolnames[2:end]))
 
-    result=hcat(DataFrame(Matrix{Union{Any,Missing}}(missing,1,1)),result)
-    names!(result,setcolnames)
+    result=hcat(DataFrame(Matrix{Union{Any,Missing}}(missing,1,1),:auto),result)
+    rename!(result,setcolnames)
 
-    Output=by(INPUT, staticstargetcol, df -> size(df, 1))
+    Output=combine(groupby(INPUT, staticstargetcol, sort=false, skipmissing=false), staticstargetcol=>df -> size(df, 1))
     result[1,groupbycol]=INPUT[1,groupbycol]
 
     for i in Output[:,staticstargetcol]

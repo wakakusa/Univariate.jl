@@ -1,8 +1,8 @@
-using Univariate
+using Univariates
 using Test
-using DataFrames
+using DataFrames,Tables
 
-@testset "univariate.jl" begin
+@testset "Univariates.jl" begin
     # Write your own tests here.
     ## テスト用データセット
     try
@@ -10,9 +10,9 @@ using DataFrames
     catch
         packagemasterpath=DEPOT_PATH[1]
         try
-            include(joinpath(packagemasterpath,"packages/Univariate/src/makeirisdataset.jl"))
+            include(joinpath(packagemasterpath,"packages/Univariates/src/makeirisdataset.jl"))
         catch
-            include(joinpath(packagemasterpath,"dev/Univariate/src/makeirisdataset.jl"))
+            include(joinpath(packagemasterpath,"dev/Univariates/src/makeirisdataset.jl"))
         end
     end
     
@@ -44,27 +44,29 @@ using DataFrames
     count=[50,50,50]
     testnonnum=DataFrame(Species=colname2,count=count)
 
-    ##test1 univariate
-    SummaryNum,SummaryNonNum=univariate(INPUT,graphplot=true)
-    @test map(x->floor(x,digits=7),convert(Matrix,SummaryNum[:,2:end])) == map(x->floor(x,digits=7),convert(Matrix,testnum[:,2:end])) 
-    @test map(x->round(x,digits=8),convert(Matrix,SummaryNum[:,2:end])) == map(x->round(x,digits=8),convert(Matrix,testnum[:,2:end])) 
-    @test SummaryNonNum==testnonnum
+    @testset "test1 univariate" begin
+        SummaryNum,SummaryNonNum=univariate(INPUT,graphplot=true)
+        @test map(x->floor(x,digits=7),Tables.Matrix(SummaryNum[:,2:end])) == map(x->floor(x,digits=7),Tables.Matrix(testnum[:,2:end])) 
+        @test map(x->round(x,digits=8),Tables.Matrix(SummaryNum[:,2:end])) == map(x->round(x,digits=8),Tables.Matrix(testnum[:,2:end])) 
+        @test SummaryNonNum==testnonnum
+    end
 
-    ##test2 groupbycolunivariate
-    INPUT=makeirisdataset()
-    groupbycol=:SepalLength
-    staticstargetcol=:Species
-    groupbycolSummary=groupbycolunivariate(INPUT,groupbycol,staticstargetcol)
-    @test permutedims(Vector(groupbycolSummary[10,[:setosa,:versicolor,:virginica]]))==[3 1 0]
-    @test permutedims(Vector(groupbycolSummary[15,[:setosa,:versicolor,:virginica]]))==[2 5 1]  
-    @test permutedims(Vector(groupbycolSummary[25,[:setosa,:versicolor,:virginica]]))==[0 3 5]
+    @testset "test2 groupbycolunivariate" begin
+        INPUT=makeirisdataset()
+        groupbycol=:SepalLength
+        staticstargetcol=:Species
+        groupbycolSummary=groupbycolunivariate(INPUT,groupbycol,staticstargetcol)
+        @test permutedims(Vector(groupbycolSummary[10,[:setosa,:versicolor,:virginica]]))==[3 1 0]
+        @test permutedims(Vector(groupbycolSummary[15,[:setosa,:versicolor,:virginica]]))==[2 5 1]  
+        @test permutedims(Vector(groupbycolSummary[25,[:setosa,:versicolor,:virginica]]))==[0 3 5]
 
-    groupbycol=:Species
-    staticstargetcol=:SepalLength
-    groupbycolSummary=groupbycolunivariate(INPUT,groupbycol,staticstargetcol)
-    #sasでの算出結果
-    sasans=[12.424897959 3.5248968721 50.06 43 48 50 52 58]
-    result=convert(Matrix,groupbycolSummary[groupbycolSummary[:,:colname] .=="setosa",[:Var,:Std,:Mean,:Min,:Quartile1st,:Median,:Quartile3rd,:Max]])
-    @test map(x->floor(x,digits=7),result)==map(x->floor(x,digits=7),sasans)
-    @test map(x->round(x,digits=8),result)==map(x->round(x,digits=8),sasans)
+        groupbycol=:Species
+        staticstargetcol=:SepalLength
+        groupbycolSummary=groupbycolunivariate(INPUT,groupbycol,staticstargetcol)
+        #sasでの算出結果
+        sasans=[12.424897959 3.5248968721 50.06 43 48 50 52 58]
+        result=Tables.Matrix(groupbycolSummary[groupbycolSummary[:,:colname] .=="setosa",[:Var,:Std,:Mean,:Min,:Quartile1st,:Median,:Quartile3rd,:Max]])
+        @test map(x->floor(x,digits=7),result)==map(x->floor(x,digits=7),sasans)
+        @test map(x->round(x,digits=8),result)==map(x->round(x,digits=8),sasans)
+    end
 end

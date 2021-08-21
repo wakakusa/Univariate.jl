@@ -537,9 +537,9 @@ uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 [[Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
-[[Univariate]]
+[[Univariates]]
 deps = ["DataFrames", "DocumenterTools", "GR", "Plots", "StatsBase", "StatsPlots"]
-path = "/home/bigdata/.julia/dev/Univariate"
+path = "/home/bigdata/.julia/dev/Univariates"
 uuid = "42afbd85-849f-45fd-a88c-babe481c26f0"
 version = "0.1.0"
 

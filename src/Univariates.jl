@@ -1,4 +1,4 @@
-module Univariate
+module Univariates
 
 #パッケージの読み込み
 using DataFrames,StatsBase#,Plots,StatsPlots,GR
